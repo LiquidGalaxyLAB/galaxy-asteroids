@@ -30,6 +30,10 @@ export class Vector3 {
    * ```
    */
   public get normalized() {
+    if (!this.magnitude) {
+      new Vector3()
+    }
+
     return new Vector3(
       this.x / this.magnitude,
       this.y / this.magnitude,
