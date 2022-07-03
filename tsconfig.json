@@ -12,9 +12,11 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
+      "@asteroids": ["libs/asteroids"],
+      "@asteroids/*": ["libs/asteroids/*"]
     },
     "lib": ["es6", "dom"]
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "libs/**/*"],
   "exclude": ["node_modules"]
 }
