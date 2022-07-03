@@ -81,7 +81,7 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.js'],
     alias: {
-      '@asteroidsjs': path.join(__dirname, 'libs/asteroidsjs'),
+      '@asteroids': path.join(__dirname, 'libs/asteroids'),
     },
   },
   output: {
