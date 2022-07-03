@@ -29,7 +29,7 @@ export class Vector2 {
    */
   get normalized() {
     if (!this.magnitude) {
-      return new Vector2(0, 0)
+      return new Vector2()
     }
 
     return new Vector2(this.x / this.magnitude, this.y / this.magnitude)
@@ -37,6 +37,10 @@ export class Vector2 {
 
   constructor(public x = 0, public y = 0) {}
 
+  /**
+   * Returns a new Vector2 with the same x and y.
+   * @returns a Vector2.
+   */
   clone() {
     return new Vector2(this.x, this.y)
   }
