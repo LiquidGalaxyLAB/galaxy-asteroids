@@ -1,1 +1,1 @@
-# galaxy-asteroids
+# Galaxy Asteroids
