@@ -76,10 +76,7 @@ export function addClass<T extends HTMLElement>(
   ...classes: string[]
 ) {
   if (typeof element === 'string') {
-    const el = getElement<T>(element)
-    el?.classList.add(...classes)
-
-    return
+    return getElement<T>(element)?.classList.add(...classes)
   }
 
   element?.classList.add(...classes)
@@ -102,10 +99,7 @@ export function removeClass<T extends HTMLElement>(
   ...classes: string[]
 ) {
   if (typeof element === 'string') {
-    const el = getElement<T>(element)
-    el?.classList.remove(...classes)
-
-    return
+    return getElement<T>(element)?.classList.remove(...classes)
   }
 
   element?.classList.remove(...classes)
@@ -130,10 +124,7 @@ export function appendChildren<T extends HTMLElement>(
   ...children: HTMLElement[]
 ) {
   if (typeof element === 'string') {
-    const el = getElement<T>(element)
-    el?.append(...children)
-
-    return
+    return getElement<T>(element)?.append(...children)
   }
 
   element?.append(...children)
@@ -160,9 +151,7 @@ export function removeChildren<T extends HTMLElement>(
 ) {
   if (typeof element === 'string') {
     const el = getElement<T>(element)
-    children.forEach((child) => el?.removeChild(child))
-
-    return
+    return children.forEach((child) => el?.removeChild(child))
   }
 
   children.forEach((child) => element?.removeChild(child))
