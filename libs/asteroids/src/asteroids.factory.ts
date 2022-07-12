@@ -1,14 +1,19 @@
 import { AbstractEntity } from './abstract-entity'
+import { Entity } from './decorators/entity.decorator'
 
 import { AbstractService } from './abstract-service'
 
 import { AbstractComponent } from './abstract-component'
 
-import { IAsteroidsApplication } from './interfaces'
-import { GameFactoryOptions } from './interfaces'
-import { IInstantiateOptions } from './interfaces/instantiate-options.interface'
-import { IProvider } from './interfaces/provider.interface'
-import { Type } from './interfaces/type.interface'
+import { AbstractScene } from './abstract-scene'
+
+import {
+  IAsteroidsApplication,
+  GameFactoryOptions,
+  IInstantiateOptions,
+  IProvider,
+  Type,
+} from './interfaces'
 
 import {
   hasOnStart,
@@ -22,10 +27,16 @@ import {
   hasOnRender,
 } from './utils/validations'
 
-import { AbstractScene } from './abstract-scene'
 import { COMPONENT_OPTIONS, ENTITY_OPTIONS, SERVICE_OPTIONS } from './constants'
 
-import { Entity, v4 } from '..'
+import { v4 } from '..'
+
+/**
+ * Class that represents an empty entity, used to instantiate an entity
+ * with only components, without any logic or behaviour inside of it
+ */
+@Entity()
+export class DefaultEntity extends AbstractEntity {}
 
 /**
  * Class that represents the main application behaviour
@@ -379,25 +390,25 @@ class AsteroidsApplication implements IAsteroidsApplication {
    * Method that starts the game loop.
    */
   private startLoop(): void {
-    setInterval(() => {
-      ;[...this.entities, ...this.components].forEach((value) => {
-        if (hasOnFixedLoop(value) && value.enabled) {
-          value.onFixedLoop()
-        }
-      })
-      ;[...this.entities, ...this.components].forEach((value) => {
-        if (hasOnLoop(value) && value.enabled) {
-          value.onLoop()
-        }
-      })
-      ;[...this.entities, ...this.components].forEach((value) => {
-        if (hasOnLateLoop(value) && value.enabled) {
-          value.onLateLoop()
-        }
-      })
+    ;[...this.entities, ...this.components].forEach((value) => {
+      if (hasOnFixedLoop(value) && value.enabled) {
+        value.onFixedLoop()
+      }
+    })
+    ;[...this.entities, ...this.components].forEach((value) => {
+      if (hasOnLoop(value) && value.enabled) {
+        value.onLoop()
+      }
+    })
+    ;[...this.entities, ...this.components].forEach((value) => {
+      if (hasOnLateLoop(value) && value.enabled) {
+        value.onLateLoop()
+      }
+    })
 
-      this.intents.forEach((intent) => intent())
-    }, 100 / 16)
+    this.intents.forEach((intent) => intent())
+
+    requestAnimationFrame(() => this.startLoop())
   }
 
   /**
@@ -520,10 +531,3 @@ export class AsteroidsFactory {
     return new AsteroidsApplication(options.bootstrap)
   }
 }
-
-/**
- * Class that represents an empty entity, used to instantiate an entity
- * with only components, without any logic or behaviour inside of it
- */
-@Entity()
-export class DefaultEntity extends AbstractEntity {}
