@@ -390,6 +390,7 @@ class AsteroidsApplication implements IAsteroidsApplication {
    * Method that starts the game loop.
    */
   private startLoop(): void {
+    requestAnimationFrame(() => this.startLoop())
     ;[...this.entities, ...this.components].forEach((value) => {
       if (hasOnFixedLoop(value) && value.enabled) {
         value.onFixedLoop()
@@ -407,8 +408,6 @@ class AsteroidsApplication implements IAsteroidsApplication {
     })
 
     this.intents.forEach((intent) => intent())
-
-    requestAnimationFrame(() => this.startLoop())
   }
 
   /**
