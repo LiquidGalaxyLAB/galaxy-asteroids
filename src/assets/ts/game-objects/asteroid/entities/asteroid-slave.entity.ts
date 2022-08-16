@@ -14,6 +14,7 @@ import {
 import { SocketService } from '../../../shared/services/socket.service'
 
 import { Drawer } from '../../../shared/components/drawer.component'
+import { Health } from '../../../shared/components/health.component'
 import { RenderOverflow } from '../../../shared/components/renderers/render-overflow.component'
 import { Render } from '../../../shared/components/renderers/render.component'
 import { Rigidbody } from '../../../shared/components/rigidbody.component'
@@ -35,6 +36,10 @@ import { Transform } from '../../../shared/components/transform.component'
       id: '__asteroid_rigidbody__',
       class: Rigidbody,
     },
+    {
+      id: '__asteroid_health__',
+      class: Health,
+    },
   ],
   services: [SocketService],
 })
@@ -42,6 +47,16 @@ export class AsteroidSlave
   extends AbstractEntity
   implements IOnAwake, IOnStart, IOnDestroy, IDraw, IOnLoop
 {
+  /**
+   * Property that defines the socket service.
+   */
+  private socketService: SocketService
+
+  /**
+   * Property that defines the asteroid image.
+   */
+  private image: HTMLImageElement
+
   /**
    * Property that defines the transform component.
    */
@@ -60,17 +75,28 @@ export class AsteroidSlave
   fragment: boolean
 
   /**
-   * Property that defines the socket service.
+   * Property that contains the asteroid health status.
    */
-  private socketService: SocketService
+  health: Health
+
+  /**
+   * Property that defines the asteroid image url.
+   */
+  imageSrc: string
 
   onAwake() {
     this.transform = this.getComponent(Transform)
+    this.health = this.getComponent(Health)
 
     this.socketService = this.getService(SocketService)
   }
 
   onStart() {
+    if (this.getComponent(Render) || this.getComponent(RenderOverflow)) {
+      this.image = new Image()
+      this.image.src = this.imageSrc
+    }
+
     this.transform.dimensions = new Rect(
       10 * ((this.size + 2) * 2),
       10 * ((this.size + 2) * 2),
@@ -118,14 +144,13 @@ export class AsteroidSlave
     this.getContexts()[0].rotate(this.transform.rotation)
 
     this.getContexts()[0].beginPath()
-    this.getContexts()[0].fillStyle = '#999999'
-    this.getContexts()[0].rect(
+    this.getContexts()[0].drawImage(
+      this.image,
       0 - this.transform.dimensions.width / 2,
       0 - this.transform.dimensions.height / 2,
       this.transform.dimensions.width,
       this.transform.dimensions.height,
     )
-    this.getContexts()[0].fill()
     this.getContexts()[0].closePath()
 
     this.getContexts()[0].rotate(-this.transform.rotation)
