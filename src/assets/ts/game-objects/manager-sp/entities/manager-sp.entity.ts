@@ -11,6 +11,9 @@ import {
 
 import { SocketService } from '../../../shared/services/socket.service'
 
+import { AsteroidGenerator } from '../../asteroid/entities/asteroid-generator.entity'
+import { AsteroidSlave } from '../../asteroid/entities/asteroid-slave.entity'
+import { Asteroid } from '../../asteroid/entities/asteroid.entity'
 import { SpaceshipSlave } from '../../spaceship/entities/spaceship-slave.entity'
 import { Spaceship } from '../../spaceship/entities/spaceship.entity'
 
@@ -91,10 +94,23 @@ export class ManagerSingleplayer
           id: '__spaceship_transform__',
           use: {
             rotation: 0,
-            dimensions: new Rect(1000, 500),
+            dimensions: new Rect(50, 50),
+          },
+        },
+        {
+          id: '__spaceship_rigidbody__',
+          use: {
+            friction: 0.00003,
+            mass: 10,
+            maxVelocity: 0.5,
+            maxAngularVelocity: 0.007,
           },
         },
       ],
+    })
+
+    this.instantiate({
+      entity: AsteroidGenerator,
     })
 
     this.socketService.emit('instantiate', {
@@ -102,7 +118,7 @@ export class ManagerSingleplayer
       type: Spaceship.name,
       data: {
         position: new Vector2(),
-        dimensions: new Rect(1000, 500),
+        dimensions: new Rect(50, 50),
       },
     } as ISocketData)
   }
@@ -128,7 +144,35 @@ export class ManagerSingleplayer
                     use: {
                       rotation: data.rotation,
                       dimensions: data.dimensions,
-                      position: data.position,
+                      position: new Vector2(data.position.x, data.position.y),
+                    },
+                  },
+                ],
+              })
+            case Asteroid.name:
+              console.log(data)
+              this.instantiate({
+                use: {
+                  id,
+                  size: data.asteroidSize,
+                  fragment: !!data.fragment,
+                },
+                entity: AsteroidSlave,
+                components: [
+                  {
+                    id: '__asteroid_transform__',
+                    use: {
+                      rotation: data.rotation,
+                      position: new Vector2(data.position.x, data.position.y),
+                    },
+                  },
+                  {
+                    id: '__asteroid_rigidbody__',
+                    use: {
+                      mass: data.mass,
+                      velocity: new Vector2(data.velocity.x, data.velocity.y),
+                      angularVelocity: data.angularVelocity,
+                      maxAngularVelocity: data.maxAngularVelocity,
                     },
                   },
                 ],

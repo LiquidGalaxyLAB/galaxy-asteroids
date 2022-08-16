@@ -1,0 +1,133 @@
+import {
+  AbstractEntity,
+  Entity,
+  IDraw,
+  IOnAwake,
+  IOnDestroy,
+  IOnLoop,
+  IOnStart,
+  isOverflowingX,
+  isOverflowingY,
+  Rect,
+} from '@asteroids'
+
+import { SocketService } from '../../../shared/services/socket.service'
+
+import { CircleCollider2 } from '../../../shared/components/colliders/circle-collider2.component'
+import { Drawer } from '../../../shared/components/drawer.component'
+import { RenderOverflow } from '../../../shared/components/renderers/render-overflow.component'
+import { Render } from '../../../shared/components/renderers/render.component'
+import { Rigidbody } from '../../../shared/components/rigidbody.component'
+import { Transform } from '../../../shared/components/transform.component'
+
+/**
+ * Entity that represents the asteroid used by the `master` screen,
+ * with all of its methods and properties.
+ */
+@Entity({
+  components: [
+    Render,
+    Drawer,
+    CircleCollider2,
+    {
+      id: '__asteroid_transform__',
+      class: Transform,
+    },
+    {
+      id: '__asteroid_rigidbody__',
+      class: Rigidbody,
+    },
+  ],
+  services: [SocketService],
+})
+export class Asteroid
+  extends AbstractEntity
+  implements IOnAwake, IOnStart, IOnDestroy, IDraw, IOnLoop
+{
+  /**
+   * Property that defines the transform component.
+   */
+  transform: Transform
+
+  /**
+   * Property that defines the asteroid size.
+   *
+   * It may be from 0 to 4.
+   */
+  size: number
+
+  /**
+   * Property that defines whether the asteroid is a fragment.
+   */
+  fragment: boolean
+
+  /**
+   * Property that defines the socket service.
+   */
+  private socketService: SocketService
+
+  onAwake() {
+    this.transform = this.getComponent(Transform)
+
+    this.socketService = this.getService(SocketService)
+  }
+
+  onStart() {
+    this.transform.dimensions = new Rect(
+      10 * ((this.size + 2) * 2),
+      10 * ((this.size + 2) * 2),
+    )
+  }
+
+  onDestroy() {
+    this.socketService.emit('destroy', this.id)
+  }
+
+  onLoop() {
+    const overflowX = isOverflowingX(
+      this.getContexts()[0].canvas.width,
+      this.transform.position.x,
+      this.transform.totalDimensions.width,
+    )
+
+    const overflowY = isOverflowingY(
+      this.getContexts()[0].canvas.height,
+      this.transform.position.y,
+      this.transform.totalDimensions.height,
+    )
+
+    if (
+      this.getComponent(Render) &&
+      !this.getComponent(RenderOverflow) &&
+      (this.fragment || (!overflowX && !overflowY))
+    ) {
+      this.addComponent(RenderOverflow)
+      this.destroy(this.getComponent(Render))
+    }
+  }
+
+  draw() {
+    this.getContexts()[0].translate(
+      this.transform.canvasPosition.x,
+      this.transform.canvasPosition.y,
+    )
+    this.getContexts()[0].rotate(this.transform.rotation)
+
+    this.getContexts()[0].beginPath()
+    this.getContexts()[0].fillStyle = '#999999'
+    this.getContexts()[0].rect(
+      0 - this.transform.dimensions.width / 2,
+      0 - this.transform.dimensions.height / 2,
+      this.transform.dimensions.width,
+      this.transform.dimensions.height,
+    )
+    this.getContexts()[0].fill()
+    this.getContexts()[0].closePath()
+
+    this.getContexts()[0].rotate(-this.transform.rotation)
+    this.getContexts()[0].translate(
+      -this.transform.canvasPosition.x,
+      -this.transform.canvasPosition.y,
+    )
+  }
+}

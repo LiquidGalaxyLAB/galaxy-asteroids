@@ -10,7 +10,7 @@ import {
 import { SocketService } from '../../../shared/services/socket.service'
 
 import { Drawer } from '../../../shared/components/drawer.component'
-import { Render } from '../../../shared/components/renderers/render.component'
+import { RenderOverflow } from '../../../shared/components/renderers/render-overflow.component'
 import { Transform } from '../../../shared/components/transform.component'
 
 import { Subscription } from 'rxjs'
@@ -21,12 +21,17 @@ import { Subscription } from 'rxjs'
  */
 @Entity({
   services: [SocketService],
-  components: [Drawer, Render, Transform],
+  components: [Drawer, RenderOverflow, Transform],
 })
 export class SpaceshipSlave
   extends AbstractEntity
   implements IOnAwake, IOnStart, IDraw
 {
+  /**
+   * Property that defines the spaceship model image.
+   */
+  image: HTMLImageElement
+
   /**
    * Property that contains the spaceship position, dimensions and rotation.
    */
@@ -50,6 +55,9 @@ export class SpaceshipSlave
   }
 
   onStart() {
+    this.image = new Image()
+    this.image.src = './assets/svg/spaceship-grey.svg'
+
     this.subscriptions.push(
       this.socketService
         .on<ISocketData>('update-screen')
@@ -80,8 +88,8 @@ export class SpaceshipSlave
     this.getContexts()[0].rotate(this.transform.rotation)
 
     this.getContexts()[0].beginPath()
-    this.getContexts()[0].fillStyle = '#5500ff'
-    this.getContexts()[0].fillRect(
+    this.getContexts()[0].drawImage(
+      this.image,
       0 - this.transform.dimensions.width / 2,
       0 - this.transform.dimensions.height / 2,
       this.transform.dimensions.width,

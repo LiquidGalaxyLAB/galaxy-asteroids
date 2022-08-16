@@ -369,45 +369,46 @@ class AsteroidsApplication implements IAsteroidsApplication {
    * Method that stars the game rendering loop.
    */
   private startRenderLoop(): void {
-    requestAnimationFrame(() => this.startRenderLoop())
+    setInterval(() => {
+      const cleanableContexts = this.scenes
+        .map((s) => s.getContexts())
+        .flat()
+        .filter((c) => c.mode === 'clear')
 
-    const cleanableContexts = this.scenes
-      .map((s) => s.getContexts())
-      .flat()
-      .filter((c) => c.mode === 'clear')
-
-    cleanableContexts.forEach((c) =>
-      c.clearRect(0, 0, c.canvas.width, c.canvas.height),
-    )
-    ;[...this.entities, ...this.components].forEach((value) => {
-      if (hasOnRender(value) && value.enabled) {
-        value.onRender()
-      }
-    })
+      cleanableContexts.forEach((c) =>
+        c.clearRect(0, 0, c.canvas.width, c.canvas.height),
+      )
+      ;[...this.entities, ...this.components].forEach((value) => {
+        if (hasOnRender(value) && value.enabled) {
+          value.onRender()
+        }
+      })
+    }, 100 / 16)
   }
 
   /**
    * Method that starts the game loop.
    */
   private startLoop(): void {
-    requestAnimationFrame(() => this.startLoop())
-    ;[...this.entities, ...this.components].forEach((value) => {
-      if (hasOnFixedLoop(value) && value.enabled) {
-        value.onFixedLoop()
-      }
-    })
-    ;[...this.entities, ...this.components].forEach((value) => {
-      if (hasOnLoop(value) && value.enabled) {
-        value.onLoop()
-      }
-    })
-    ;[...this.entities, ...this.components].forEach((value) => {
-      if (hasOnLateLoop(value) && value.enabled) {
-        value.onLateLoop()
-      }
-    })
+    setInterval(() => {
+      ;[...this.entities, ...this.components].forEach((value) => {
+        if (hasOnFixedLoop(value) && value.enabled) {
+          value.onFixedLoop()
+        }
+      })
+      ;[...this.entities, ...this.components].forEach((value) => {
+        if (hasOnLoop(value) && value.enabled) {
+          value.onLoop()
+        }
+      })
+      ;[...this.entities, ...this.components].forEach((value) => {
+        if (hasOnLateLoop(value) && value.enabled) {
+          value.onLateLoop()
+        }
+      })
 
-    this.intents.forEach((intent) => intent())
+      this.intents.forEach((intent) => intent())
+    }, 100 / 16)
   }
 
   /**
