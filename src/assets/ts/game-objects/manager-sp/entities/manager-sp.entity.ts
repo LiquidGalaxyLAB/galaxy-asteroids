@@ -17,6 +17,7 @@ import { Asteroid } from '../../asteroid/entities/asteroid.entity'
 import { SpaceshipSlave } from '../../spaceship/entities/spaceship-slave.entity'
 import { Spaceship } from '../../spaceship/entities/spaceship.entity'
 
+import { GameService } from '../../../shared/services/game.service'
 import { LGService } from '../../../shared/services/lg.service'
 
 import { firstValueFrom, Subscription } from 'rxjs'
@@ -25,12 +26,17 @@ import { firstValueFrom, Subscription } from 'rxjs'
  * Entity that managers the Singleplayer game mode.
  */
 @Entity({
-  services: [LGService, SocketService],
+  services: [GameService, LGService, SocketService],
 })
 export class ManagerSingleplayer
   extends AbstractEntity
   implements IOnAwake, IOnStart, IOnDestroy
 {
+  /**
+   * Property that defines the game service.
+   */
+  private gameService: GameService
+
   /**
    * Property that defines the Liquid Galaxy service.
    */
@@ -48,6 +54,7 @@ export class ManagerSingleplayer
   private subscriptions: Subscription[] = []
 
   onAwake() {
+    this.gameService = this.getService(GameService)
     this.lgService = this.getService(LGService)
     this.socketService = this.getService(SocketService)
   }
@@ -87,6 +94,8 @@ export class ManagerSingleplayer
    * Initializes the game mode as the `master` screen.
    */
   private master() {
+    this.gameService.maxAsteroidsAmount = 10
+
     const spaceship = this.instantiate({
       entity: Spaceship,
       components: [
@@ -149,12 +158,13 @@ export class ManagerSingleplayer
                   },
                 ],
               })
+              break
             case Asteroid.name:
-              console.log(data)
               this.instantiate({
                 use: {
                   id,
                   size: data.asteroidSize,
+                  imageSrc: data.image,
                   fragment: !!data.fragment,
                 },
                 entity: AsteroidSlave,
@@ -175,8 +185,17 @@ export class ManagerSingleplayer
                       maxAngularVelocity: data.maxAngularVelocity,
                     },
                   },
+                  {
+                    id: '__asteroids_health__',
+                    use: {
+                      color: data.color,
+                      maxHealth: data.maxHealth,
+                      health: data.health,
+                    },
+                  },
                 ],
               })
+              break
           }
         }),
     )
