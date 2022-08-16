@@ -13,6 +13,8 @@ import { SocketService } from '../../../shared/services/socket.service'
 
 import { Asteroid } from './asteroid.entity'
 
+import { GameService } from '../../../shared/services/game.service'
+
 import { Subscription } from 'rxjs'
 
 /**
@@ -20,7 +22,7 @@ import { Subscription } from 'rxjs'
  * generates new asteroids according to the current scene.
  */
 @Entity({
-  services: [SocketService],
+  services: [GameService, SocketService],
 })
 export class AsteroidGenerator
   extends AbstractEntity
@@ -32,12 +34,23 @@ export class AsteroidGenerator
   private socketService: SocketService
 
   /**
+   * Property that defines the game service.
+   */
+  private gameService: GameService
+
+  /**
+   * Property that defines the asteroids generation interval.
+   */
+  private interval: ReturnType<typeof setInterval>
+
+  /**
    * Property that defines an array of subscriptions that will be unsubscribed when
    * the entity is destroyed.
    */
   private subscriptions: Subscription[]
 
   onAwake() {
+    this.gameService = this.getService(GameService)
     this.socketService = this.getService(SocketService)
   }
 
@@ -46,13 +59,21 @@ export class AsteroidGenerator
       this.generateAsteroid()
     }
 
-    setInterval(() => {
+    this.interval = setInterval(() => {
+      if (
+        this.gameService.asteroidsAmount > this.gameService.maxAsteroidsAmount
+      ) {
+        return
+      }
+
+      this.generateAsteroid()
       this.generateAsteroid()
     }, 7000)
   }
 
   onDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe())
+    clearInterval(this.interval)
   }
 
   /**
@@ -61,6 +82,8 @@ export class AsteroidGenerator
   private generateAsteroid() {
     const sizes = [0, 1, 2, 3, 4]
     const asteroidSize = getRandom(sizes)
+
+    const color = { colorName: 'grey', hex: '#8d8d8d' }
 
     const offset = 150
 
@@ -92,6 +115,10 @@ export class AsteroidGenerator
 
     const mass = 15 * (asteroidSize + 1)
 
+    const health = (asteroidSize - 1) * 20
+
+    this.gameService.asteroidsAmount += 1
+
     const asteroid = this.instantiate({
       use: {
         size: asteroidSize,
@@ -114,6 +141,14 @@ export class AsteroidGenerator
             maxAngularVelocity: 0.005,
           },
         },
+        {
+          id: '__asteroid_health__',
+          use: {
+            color: color.hex,
+            maxHealth: health,
+            health,
+          },
+        },
       ],
     })
 
@@ -124,10 +159,14 @@ export class AsteroidGenerator
         position: new Vector2(x, y),
         rotation,
         asteroidSize,
+        image: asteroid.image.src,
         velocity,
         mass,
         angularVelocity,
         maxAngularVelocity: 0.005,
+        color: color.hex,
+        maxHealth: health,
+        health,
       },
     } as ISocketData)
   }
