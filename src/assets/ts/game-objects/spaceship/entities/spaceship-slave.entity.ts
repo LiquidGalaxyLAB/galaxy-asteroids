@@ -10,6 +10,7 @@ import {
 import { SocketService } from '../../../shared/services/socket.service'
 
 import { Drawer } from '../../../shared/components/drawer.component'
+import { Health } from '../../../shared/components/health.component'
 import { RenderOverflow } from '../../../shared/components/renderers/render-overflow.component'
 import { Transform } from '../../../shared/components/transform.component'
 
@@ -21,21 +22,26 @@ import { Subscription } from 'rxjs'
  */
 @Entity({
   services: [SocketService],
-  components: [Drawer, RenderOverflow, Transform],
+  components: [
+    Drawer,
+    RenderOverflow,
+    Transform,
+    { id: '__spaceship_health__', class: Health },
+  ],
 })
 export class SpaceshipSlave
   extends AbstractEntity
   implements IOnAwake, IOnStart, IDraw
 {
   /**
-   * Property that defines the spaceship model image.
-   */
-  image: HTMLImageElement
-
-  /**
    * Property that contains the spaceship position, dimensions and rotation.
    */
   private transform: Transform
+
+  /**
+   * Property that contains the spaceship health status.
+   */
+  private health: Health
 
   /**
    * Property that defines the socket service.
@@ -48,9 +54,15 @@ export class SpaceshipSlave
    */
   private subscriptions: Subscription[] = []
 
+  /**
+   * Property that defines the spaceship model image.
+   */
+  image: HTMLImageElement
+
   onAwake() {
     this.socketService = this.getService(SocketService)
 
+    this.health = this.getComponent(Health)
     this.transform = this.getComponent(Transform)
   }
 
@@ -69,6 +81,8 @@ export class SpaceshipSlave
           this.transform.position = data.position
           this.transform.dimensions = data.dimensions
           this.transform.rotation = data.rotation
+          this.health.health = data.health
+          this.health.maxHealth = data.maxHealth
         }),
 
       this.socketService.on<string>('destroy').subscribe((id) => {
