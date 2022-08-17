@@ -1,0 +1,15 @@
+.score-container {
+  position: fixed;
+  top: 2.5rem;
+  right: 3.125rem;
+
+  pointer-events: none;
+  z-index: 10;
+
+  font-family: 'Neptunus';
+
+  & > .score {
+    color: white;
+    letter-spacing: 0.125rem;
+  }
+}
