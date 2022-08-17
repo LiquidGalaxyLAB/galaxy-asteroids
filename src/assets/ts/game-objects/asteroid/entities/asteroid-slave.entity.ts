@@ -20,6 +20,8 @@ import { Render } from '../../../shared/components/renderers/render.component'
 import { Rigidbody } from '../../../shared/components/rigidbody.component'
 import { Transform } from '../../../shared/components/transform.component'
 
+import { Subscription } from 'rxjs'
+
 /**
  * Entity that represents the asteroid used by the `master` screen,
  * with all of its methods and properties.
@@ -48,9 +50,20 @@ export class AsteroidSlave
   implements IOnAwake, IOnStart, IOnDestroy, IDraw, IOnLoop
 {
   /**
+   * Property that contains the asteroid health status.
+   */
+  private health: Health
+
+  /**
    * Property that defines the socket service.
    */
   private socketService: SocketService
+
+  /**
+   * Property that defines an array of subscriptions that will be unsubscribed when
+   * the entity is destroyed.
+   */
+  private subscriptions: Subscription[] = []
 
   /**
    * Property that defines the asteroid image.
@@ -75,11 +88,6 @@ export class AsteroidSlave
   fragment: boolean
 
   /**
-   * Property that contains the asteroid health status.
-   */
-  health: Health
-
-  /**
    * Property that defines the asteroid image url.
    */
   imageSrc: string
@@ -102,11 +110,21 @@ export class AsteroidSlave
       10 * ((this.size + 2) * 2),
     )
 
-    this.socketService.on<string>('destroy').subscribe((id) => {
-      if (id === this.id) {
-        this.destroy(this)
-      }
-    })
+    this.subscriptions.push(
+      this.socketService
+        .on<{ id: string; amount: number }>('change-health')
+        .subscribe(({ id, amount }) => {
+          if (id === this.id) {
+            this.health.health = amount
+          }
+        }),
+
+      this.socketService.on<string>('destroy').subscribe((id) => {
+        if (id === this.id) {
+          this.destroy(this)
+        }
+      }),
+    )
   }
 
   onLoop() {
@@ -134,6 +152,7 @@ export class AsteroidSlave
 
   onDestroy() {
     this.socketService.emit('destroy', this.id)
+    this.subscriptions.forEach((s) => s.unsubscribe())
   }
 
   draw() {
