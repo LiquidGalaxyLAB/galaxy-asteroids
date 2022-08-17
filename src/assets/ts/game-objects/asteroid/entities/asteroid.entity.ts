@@ -15,7 +15,10 @@ import {
 
 import { SocketService } from '../../../shared/services/socket.service'
 
+import { Bullet } from '../../bullet/entities/bullet.entity'
+
 import { GameService } from '../../../shared/services/game.service'
+import { UserService } from '../../../shared/services/user.service'
 
 import { CircleCollider2 } from '../../../shared/components/colliders/circle-collider2.component'
 import { Drawer } from '../../../shared/components/drawer.component'
@@ -26,6 +29,9 @@ import { Rigidbody } from '../../../shared/components/rigidbody.component'
 import { Transform } from '../../../shared/components/transform.component'
 
 import { ICollision2 } from '../../../shared/interfaces/collision2.interface'
+import { IOnTriggerEnter } from '../../../shared/interfaces/on-trigger-enter.interface'
+
+import { Subscription } from 'rxjs'
 
 /**
  * Entity that represents the asteroid used by the `master` screen,
@@ -49,11 +55,11 @@ import { ICollision2 } from '../../../shared/interfaces/collision2.interface'
       class: Health,
     },
   ],
-  services: [GameService, SocketService],
+  services: [GameService, SocketService, UserService],
 })
 export class Asteroid
   extends AbstractEntity
-  implements IOnAwake, IOnStart, IOnDestroy, IDraw, IOnLoop
+  implements IOnAwake, IOnStart, IOnDestroy, IDraw, IOnLoop, IOnTriggerEnter
 {
   /**
    * Property that defines the game service.
@@ -64,6 +70,22 @@ export class Asteroid
    * Property that defines the socket service.
    */
   private socketService: SocketService
+
+  /**
+   * Property that defines the user service.
+   */
+  private userService: UserService
+
+  /**
+   * Property that defines an array of subscriptions that will be unsubscribed when
+   * the entity is destroyed.
+   */
+  private subscriptions: Subscription[] = []
+
+  /**
+   * Property that defines the group id that was hit.
+   */
+  private hitGroup: string
 
   /**
    * @inheritDoc
@@ -109,6 +131,7 @@ export class Asteroid
 
     this.gameService = this.getService(GameService)
     this.socketService = this.getService(SocketService)
+    this.userService = this.getService(UserService)
   }
 
   onStart() {
@@ -143,10 +166,17 @@ export class Asteroid
       10 * ((this.size + 2) * 2),
       10 * ((this.size + 2) * 2),
     )
+
+    this.subscriptions.push(
+      this.health.health$.subscribe((value) => {
+        this.socketService.emit('change-health', { id: this.id, amount: value })
+      }),
+    )
   }
 
   onDestroy() {
     this.socketService.emit('destroy', this.id)
+    this.subscriptions.forEach((s) => s.unsubscribe())
   }
 
   onTriggerEnter(collision: ICollision2) {
@@ -158,12 +188,30 @@ export class Asteroid
       this.generationTime &&
       new Date().getTime() - this.generationTime.getTime()
 
-    if (generationDiff > 100 / this.timeScale) {
+    if (collision.entity2.tag?.includes(Bullet.name)) {
+      const bullet = collision.entity2 as unknown as Bullet
+
+      this.destroy(bullet)
+
+      if (generationDiff <= 100 / this.timeScale) {
+        return
+      }
+
+      if (!this.hitGroup || this.hitGroup !== bullet.groupId) {
+        this.hitGroup = bullet.groupId
+      }
+
       this.health.hurt(20)
+    } else if (generationDiff > 100 / this.timeScale) {
+      this.health.hurt(this.health.maxHealth)
     }
 
     if (this.health.health > 0) {
       return
+    }
+
+    if (collision.entity2.tag?.includes(Bullet.name)) {
+      this.userService.increaseScore(this.size + 1)
     }
 
     if (this.size > 0) {

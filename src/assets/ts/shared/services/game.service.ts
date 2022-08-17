@@ -8,6 +8,11 @@ import { BehaviorSubject } from 'rxjs'
 @Service()
 export class GameService extends AbstractService {
   /**
+   * Property responsible for keeping whether the player died.
+   */
+  private _gameOver = new BehaviorSubject(false)
+
+  /**
    * Property responsible for keeping the current asteroid amount
    * on the game.
    */
@@ -19,21 +24,51 @@ export class GameService extends AbstractService {
    *
    * @default 10
    */
-  public maxAsteroidsAmount = 10
+  maxAsteroidsAmount = 10
+
+  /**
+   * An observable that is triggered every time the game over is
+   * updated.
+   */
+  get gameOver$() {
+    return this._gameOver.asObservable()
+  }
+
+  /**
+   * Property responsible for keeping the current game over status.
+   */
+  get gameOver() {
+    return this._gameOver.value
+  }
+
+  /**
+   * Property responsible for keeping the current game over status.
+   */
+  set gameOver(value: boolean) {
+    this._gameOver.next(value)
+  }
 
   /**
    * An observable that is triggered every time the asteroids amount
    * is updated.
    */
-  public get asteroidsAmount$() {
+  get asteroidsAmount$() {
     return this._asteroidsAmount.asObservable()
   }
 
-  public get asteroidsAmount() {
+  /**
+   * Property responsible for keeping the current asteroid amount
+   * on the game.
+   */
+  get asteroidsAmount() {
     return this._asteroidsAmount.value
   }
 
-  public set asteroidsAmount(value: number) {
+  /**
+   * Property responsible for keeping the current asteroid amount
+   * on the game.
+   */
+  set asteroidsAmount(value: number) {
     this._asteroidsAmount.next(value)
   }
 }

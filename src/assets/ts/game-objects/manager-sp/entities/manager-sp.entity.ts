@@ -11,9 +11,13 @@ import {
 
 import { SocketService } from '../../../shared/services/socket.service'
 
+import { GameOver } from '../../../ui/game-over/entities/game-over.entity'
+import { Score } from '../../../ui/score/entities/score.entity'
 import { AsteroidGenerator } from '../../asteroid/entities/asteroid-generator.entity'
 import { AsteroidSlave } from '../../asteroid/entities/asteroid-slave.entity'
 import { Asteroid } from '../../asteroid/entities/asteroid.entity'
+import { BulletSlave } from '../../bullet/entities/bullet-slave.entity'
+import { Bullet } from '../../bullet/entities/bullet.entity'
 import { SpaceshipSlave } from '../../spaceship/entities/spaceship-slave.entity'
 import { Spaceship } from '../../spaceship/entities/spaceship.entity'
 
@@ -94,7 +98,24 @@ export class ManagerSingleplayer
    * Initializes the game mode as the `master` screen.
    */
   private master() {
+    this.subscriptions.push(
+      this.gameService.gameOver$.subscribe((gameOver) => {
+        if (!gameOver) {
+          return
+        }
+
+        this.instantiate({ entity: GameOver })
+        this.socketService.emit('game-over')
+      }),
+    )
+
     this.gameService.maxAsteroidsAmount = 10
+
+    this.instantiate({
+      entity: Score,
+    })
+
+    const spaceshipHealth = 30
 
     const spaceship = this.instantiate({
       entity: Spaceship,
@@ -115,6 +136,14 @@ export class ManagerSingleplayer
             maxAngularVelocity: 0.007,
           },
         },
+        {
+          id: '__spaceship_health__',
+          use: {
+            maxHealth: spaceshipHealth,
+            health: spaceshipHealth,
+            color: '#8d8d8d',
+          },
+        },
       ],
     })
 
@@ -128,6 +157,9 @@ export class ManagerSingleplayer
       data: {
         position: new Vector2(),
         dimensions: new Rect(50, 50),
+        maxHealth: spaceshipHealth,
+        health: spaceshipHealth,
+        color: '#8d8d8d',
       },
     } as ISocketData)
   }
@@ -136,6 +168,12 @@ export class ManagerSingleplayer
    * Initializes the game mode as a `slave` screen.
    */
   private slave() {
+    this.subscriptions.push(
+      this.socketService.on('game-over').subscribe(() => {
+        this.instantiate({ entity: GameOver })
+      }),
+    )
+
     this.subscriptions.push(
       this.socketService
         .on<ISocketData>('instantiate')
@@ -154,6 +192,40 @@ export class ManagerSingleplayer
                       rotation: data.rotation,
                       dimensions: data.dimensions,
                       position: new Vector2(data.position.x, data.position.y),
+                    },
+                  },
+                  {
+                    id: '__spaceship_health__',
+                    use: {
+                      color: data.color,
+                      maxHealth: data.maxHealth,
+                      health: data.health,
+                    },
+                  },
+                ],
+              })
+              break
+            case Bullet.name:
+              this.instantiate({
+                use: {
+                  id,
+                  userId: data.userId,
+                },
+                entity: BulletSlave,
+                components: [
+                  {
+                    id: '__bullet_transform__',
+                    use: {
+                      rotation: data.rotation,
+                      position: data.position,
+                      dimensions: new Rect(2, 14),
+                    },
+                  },
+                  {
+                    id: '__bullet_rigidbody__',
+                    use: {
+                      velocity: data.velocity,
+                      mass: 3,
                     },
                   },
                 ],

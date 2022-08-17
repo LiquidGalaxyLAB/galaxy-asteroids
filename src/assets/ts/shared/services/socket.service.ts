@@ -5,17 +5,21 @@ import io from 'socket.io-client/dist/socket.io.js'
 import { BehaviorSubject, Observable } from 'rxjs'
 
 type SocketEmitEvents =
+  | 'change-health'
   | 'change-scene'
   | 'connect-screen'
   | 'destroy'
   | 'disconnect'
+  | 'game-over'
   | 'instantiate'
   | 'screen-amount'
   | 'update-slaves'
 
 type SocketOnEvents =
+  | 'change-health'
   | 'change-scene'
   | 'destroy'
+  | 'game-over'
   | 'instantiate'
   | 'update-screen'
 

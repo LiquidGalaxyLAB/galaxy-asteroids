@@ -56,26 +56,26 @@ export class Input
   /**
    * Property that defines the acceleration force.
    */
-  public force: number
+  force: number
 
   /**
    * Property that defines the angular acceleration force.
    */
-  public angularForce: number
+  angularForce: number
 
-  onAwake(): void {
+  onAwake() {
     this.spaceship = this.getEntityAs<Spaceship>()
     this.rigidbody = this.getComponent(Rigidbody)
   }
 
-  onStart(): void {
+  onStart() {
     this.listenKeys()
   }
 
   /**
    * Captures the pressed key and checks the corresponding action.
    */
-  public listenKeys(): void {
+  listenKeys() {
     fromEvent(window, 'keydown').subscribe((e: KeyboardEvent) => {
       this.setGameKeyPressed(e.code, true)
     })
@@ -91,7 +91,7 @@ export class Input
    * @param key - String that represents the pressed key.
    * @param isPressed - Whether the key is pressed or not.
    */
-  private setGameKeyPressed(key: string, isPressed: boolean): void {
+  private setGameKeyPressed(key: string, isPressed: boolean) {
     switch (key) {
       case 'KeyW':
       case 'ArrowUp':
@@ -117,13 +117,10 @@ export class Input
       case 'ShiftRight':
         this.gameKeys['shoot'] = isPressed
         break
-      case 'ShiftLeft':
-        this.gameKeys['slowmo'] = isPressed
-        break
     }
   }
 
-  public onLoop(): void {
+  onLoop() {
     if (
       !Object.entries(this.gameKeys)
         .filter((item) => item[0] === 'left' || item[0] === 'right')
@@ -132,6 +129,16 @@ export class Input
     ) {
       this.rigidbody.angularVelocity = 0
       this.rigidbody.angularResultant = 0
+    }
+
+    if (this.gameKeys['shoot'] && !this.spaceship.shooting) {
+      this.spaceship.shooting = true
+    } else if (!this.gameKeys['shoot'] && this.spaceship.shooting) {
+      this.spaceship.shooting = false
+    }
+
+    if (this.spaceship.shooting) {
+      this.spaceship.shoot()
     }
 
     if (this.gameKeys['up']) {

@@ -47,7 +47,7 @@ export class AsteroidGenerator
    * Property that defines an array of subscriptions that will be unsubscribed when
    * the entity is destroyed.
    */
-  private subscriptions: Subscription[]
+  private subscriptions: Subscription[] = []
 
   onAwake() {
     this.gameService = this.getService(GameService)
@@ -55,6 +55,12 @@ export class AsteroidGenerator
   }
 
   onStart() {
+    this.gameService.gameOver$.subscribe((value) => {
+      if (value) {
+        clearInterval(this.interval)
+      }
+    })
+
     for (let i = 0; i < 3; i++) {
       this.generateAsteroid()
     }
