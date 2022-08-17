@@ -18,6 +18,21 @@ export class UserService extends AbstractService {
   userId = v4()
 
   /**
+   * Property that defines the user nickname.
+   */
+  nickname = 'GUEST'
+
+  /**
+   * Property that defines the user spaceship color.
+   */
+  color = '#888888'
+
+  /**
+   * Property that defines the user spaceship image.
+   */
+  image = 'grey'
+
+  /**
    * Observable that keeps tracking the user score changes.
    */
   get score$() {

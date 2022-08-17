@@ -3,7 +3,7 @@ import 'reflect-metadata'
 
 import { AbstractScene, AsteroidsFactory, Type } from '@asteroids'
 
-import { Singleplayer } from './assets/ts/scenes/single.scene'
+import { Menu } from './assets/ts/scenes/menu.scene'
 
 /**
  * Creates and starts the game.
@@ -14,4 +14,4 @@ function bootstrap<S extends AbstractScene>(scene: Type<S>) {
   })
   game.start()
 }
-bootstrap(Singleplayer)
+bootstrap(Menu)

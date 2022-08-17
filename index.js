@@ -169,16 +169,6 @@ function setupSocketScreen() {
     socket.on('destroy', onDestroy)
 
     /**
-     * Updates the entity data in the slaves screens.
-     *
-     * @param {SocketData} data The master entity data.
-     */
-    function updateSlaves(data) {
-      ioScreen.to('slave').emit('update-screen', data)
-    }
-    socket.on('update-slaves', updateSlaves)
-
-    /**
      * Emits to all slaves screens that the entity have been damaged or healed.
      *
      * @param {{ id: string, health: number }} data The data containing the entity id and its health amount.
@@ -187,6 +177,16 @@ function setupSocketScreen() {
       ioScreen.emit('change-health', data)
     }
     socket.on('change-health', changeHealth)
+
+    /**
+     * Emits to all screens that the player has updated.
+     *
+     * @param {SocketData} data the player updated data.
+     */
+    function updatePlayer(data) {
+      ioScreen.emit('update-player', data)
+    }
+    socket.on('update-player', updatePlayer)
 
     /**
      * Called when a screen is disconnected.

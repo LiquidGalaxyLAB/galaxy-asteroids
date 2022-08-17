@@ -1,0 +1,110 @@
+.menu-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 100px;
+
+  position: relative;
+
+  width: 100vw;
+  height: 100vh;
+
+  font-family: 'Neptunus';
+
+  & .play-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+
+    width: 450px;
+
+    & .play-game-selector {
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 20px;
+
+      padding: 5px 10px;
+
+      overflow: visible;
+
+      & > img {
+        opacity: 0;
+
+        height: 60px;
+        width: 60px;
+
+        transform: rotateZ(39.52deg);
+
+        transition: opacity 0.2s;
+      }
+
+      & > button:hover ~ img {
+        opacity: 1;
+      }
+    }
+  }
+
+  & .player-customization {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    width: 280px;
+
+    margin-right: 50px;
+
+    & .spaceship-customization {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+
+      width: 100%;
+      min-height: 200px;
+
+      padding: 0 5px;
+
+      & .spaceship-skin-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex: 1;
+
+        & img {
+          width: 60%;
+          height: 60%;
+          object-fit: contain;
+
+          animation-name: rotate-spaceship;
+          animation-duration: 20s;
+          animation-delay: 0.1s;
+          animation-fill-mode: forwards;
+          animation-iteration-count: infinite;
+          animation-timing-function: linear;
+        }
+      }
+    }
+
+    & .spaceship-color-picker {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+
+      min-height: 20px;
+
+      margin-bottom: 20px;
+    }
+  }
+}
+
+@keyframes rotate-spaceship {
+  from {
+    transform: rotateZ(0deg);
+  }
+  to {
+    transform: rotateZ(-360deg);
+  }
+}

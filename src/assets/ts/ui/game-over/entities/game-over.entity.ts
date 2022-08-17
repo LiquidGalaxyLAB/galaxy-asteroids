@@ -19,6 +19,7 @@ import { GameService } from '../../../shared/services/game.service'
 import { LGService } from '../../../shared/services/lg.service'
 import { UserService } from '../../../shared/services/user.service'
 
+import { Menu } from '../../../scenes/menu.scene'
 import { Singleplayer } from '../../../scenes/single.scene'
 import { Subscription } from 'rxjs'
 
@@ -75,6 +76,10 @@ export class GameOver
           case 'single':
             this.scene.unload(this.scene)
             this.scene.load(Singleplayer)
+            break
+          case 'menu':
+            this.scene.unload(this.scene)
+            this.scene.load(Menu)
             break
         }
       }),

@@ -23,14 +23,15 @@ import { Spaceship } from '../../spaceship/entities/spaceship.entity'
 
 import { GameService } from '../../../shared/services/game.service'
 import { LGService } from '../../../shared/services/lg.service'
+import { UserService } from '../../../shared/services/user.service'
 
-import { firstValueFrom, Subscription } from 'rxjs'
+import { Subscription } from 'rxjs'
 
 /**
  * Entity that managers the Singleplayer game mode.
  */
 @Entity({
-  services: [GameService, LGService, SocketService],
+  services: [GameService, LGService, SocketService, UserService],
 })
 export class ManagerSingleplayer
   extends AbstractEntity
@@ -52,6 +53,11 @@ export class ManagerSingleplayer
   private socketService: SocketService
 
   /**
+   * Property that defines the user service.
+   */
+  private userService: UserService
+
+  /**
    * Property that defines an array of subscriptions, used to unsubscribe all when
    * destroyed.
    */
@@ -61,6 +67,7 @@ export class ManagerSingleplayer
     this.gameService = this.getService(GameService)
     this.lgService = this.getService(LGService)
     this.socketService = this.getService(SocketService)
+    this.userService = this.getService(UserService)
   }
 
   onStart() {
@@ -70,10 +77,10 @@ export class ManagerSingleplayer
           return
         }
 
-        this.lgService.screenAmount = amount
-        await firstValueFrom(
-          this.lgService.connectScreen(this.lgService.getPathScreenNumber()),
-        )
+        // this.lgService.screenAmount = amount
+        // await firstValueFrom(
+        //   this.lgService.connectScreen(this.lgService.getPathScreenNumber()),
+        // )
 
         this.lgService.setCanvasSize()
 
@@ -111,6 +118,13 @@ export class ManagerSingleplayer
 
     this.gameService.maxAsteroidsAmount = 10
 
+    // const color = window.localStorage.getItem(StorageEnum.COLOR)
+
+    const color = {
+      hex: this.userService.color,
+      name: this.userService.image,
+    }
+
     this.instantiate({
       entity: Score,
     })
@@ -119,6 +133,10 @@ export class ManagerSingleplayer
 
     const spaceship = this.instantiate({
       entity: Spaceship,
+      use: {
+        userId: this.userService.userId,
+        color: color.name,
+      },
       components: [
         {
           id: '__spaceship_transform__',
@@ -141,7 +159,7 @@ export class ManagerSingleplayer
           use: {
             maxHealth: spaceshipHealth,
             health: spaceshipHealth,
-            color: '#8d8d8d',
+            color: color.hex,
           },
         },
       ],
@@ -159,7 +177,8 @@ export class ManagerSingleplayer
         dimensions: new Rect(50, 50),
         maxHealth: spaceshipHealth,
         health: spaceshipHealth,
-        color: '#8d8d8d',
+        color: color.hex,
+        colorName: color.name,
       },
     } as ISocketData)
   }
@@ -183,6 +202,7 @@ export class ManagerSingleplayer
               this.instantiate({
                 use: {
                   id,
+                  color: data.colorName,
                 },
                 entity: SpaceshipSlave,
                 components: [
