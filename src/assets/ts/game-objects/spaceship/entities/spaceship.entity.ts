@@ -155,6 +155,13 @@ export class Spaceship
   image: HTMLImageElement
 
   /**
+   * Property that defines the spaceship color.
+   *
+   * @default "grey"
+   */
+  color = 'grey'
+
+  /**
    * Property that represents whether the spaceship is shooting.
    */
   shooting = false
@@ -191,7 +198,7 @@ export class Spaceship
 
   onStart() {
     this.image = new Image()
-    this.image.src = './assets/svg/spaceship-grey.svg'
+    this.image.src = `./assets/svg/spaceship-${this.color}.svg`
 
     this.subscriptions.push(
       this.health.health$.subscribe((value) => {

@@ -59,6 +59,13 @@ export class SpaceshipSlave
    */
   image: HTMLImageElement
 
+  /**
+   * Property that defines the spaceship color.
+   *
+   * @default "grey"
+   */
+  color = 'grey'
+
   onAwake() {
     this.socketService = this.getService(SocketService)
 
@@ -68,7 +75,7 @@ export class SpaceshipSlave
 
   onStart() {
     this.image = new Image()
-    this.image.src = './assets/svg/spaceship-grey.svg'
+    this.image.src = `./assets/svg/spaceship-${this.color}.svg`
 
     this.subscriptions.push(
       this.socketService
