@@ -14,6 +14,11 @@ import { Observable, of } from 'rxjs'
 })
 export class LGService extends AbstractService implements IOnAwake {
   /**
+   * Property that defines the socket service.
+   */
+  private socketService: SocketService
+
+  /**
    * Property that defines the current screen data.
    */
   screen: IScreen
@@ -48,20 +53,31 @@ export class LGService extends AbstractService implements IOnAwake {
   /**
    * Property that defines the canvas total width.
    */
-  public canvasWidth = 0
+  canvasWidth = 0
 
   /**
    * Property that defines the canvas total height.
    */
-  public canvasHeight = 0
+  canvasHeight = 0
 
   /**
-   * Property that defines the socket service.
+   * Property that defines whether the current screen is the master.
    */
-  private socketService: SocketService
+  get master() {
+    return this.screen?.number === 1
+  }
 
   onAwake() {
     this.socketService = this.getService(SocketService)
+  }
+
+  /**
+   * Emits to all screens to change to a specific scene.
+   *
+   * @param scene the scene to be loaded.
+   */
+  changeScene(scene: string) {
+    this.socketService.emit('change-scene', scene)
   }
 
   /**
