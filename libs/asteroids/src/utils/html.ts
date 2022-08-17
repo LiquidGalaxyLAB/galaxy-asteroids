@@ -9,7 +9,7 @@
  * getHtml('menu', 'ast-menu')
  */
 export async function getHtml(fileName: string, selector: string) {
-  const path = `${window.location.origin}}/assets/html/${fileName}.html`
+  const path = `${window.location.origin}/assets/html/${fileName}.html`
   const response = await fetch(path)
   const blob = await response.blob()
   const text = await blob.text()
