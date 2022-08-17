@@ -131,6 +131,14 @@ function setupSocketScreen() {
     socket.on('update-slaves', updateSlaves)
 
     /**
+     * Emits to all slaves screens that the game is over.
+     */
+    function gameOver() {
+      ioScreen.emit('game-over')
+    }
+    socket.on('game-over', gameOver)
+
+    /**
      * Emits to all slaves screens that the scene has changed.
      *
      * @param {string} scene The scene name.
@@ -169,6 +177,16 @@ function setupSocketScreen() {
       ioScreen.to('slave').emit('update-screen', data)
     }
     socket.on('update-slaves', updateSlaves)
+
+    /**
+     * Emits to all slaves screens that the entity have been damaged or healed.
+     *
+     * @param {{ id: string, health: number }} data The data containing the entity id and its health amount.
+     */
+    function changeHealth(data) {
+      ioScreen.emit('change-health', data)
+    }
+    socket.on('change-health', changeHealth)
 
     /**
      * Called when a screen is disconnected.
