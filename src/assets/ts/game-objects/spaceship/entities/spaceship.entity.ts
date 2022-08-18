@@ -31,6 +31,8 @@ import { Input } from '../components/input.component'
 import { ICollision2 } from '../../../shared/interfaces/collision2.interface'
 import { IOnTriggerEnter } from '../../../shared/interfaces/on-trigger-enter.interface'
 
+import { assetPath } from '../../../utils/assets'
+
 import { Subscription } from 'rxjs'
 
 /**
@@ -198,7 +200,7 @@ export class Spaceship
 
   onStart() {
     this.image = new Image()
-    this.image.src = `./assets/svg/spaceship-${this.color}.svg`
+    this.image.src = `${assetPath}/svg/spaceship-${this.color}.svg`
 
     this.subscriptions.push(
       this.health.health$.subscribe((value) => {

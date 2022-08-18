@@ -73,7 +73,7 @@ export class Menu
           return
         }
 
-        this.lgService.screenAmount = amount
+        this.lgService.screenAmount = +amount
         await firstValueFrom(
           this.lgService.connectScreen(this.lgService.getPathScreenNumber()),
         )

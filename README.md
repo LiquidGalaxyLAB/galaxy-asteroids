@@ -3,6 +3,9 @@
 ### Summary
 
 - [About](#about)
+- [Requirements](#requirements)
+- [Installing the game](#installing-the-game)
+- [Playing](#playing)
 - [Project structure](#project-structure)
   - [Libs](#libs)
   - [index.js](#indexjs)
@@ -25,6 +28,77 @@
 <p align="justify">
 Galaxy Asteroids consists of a singleplayer/multiplayer and multi-screen game that looks like the old Asteroids with the Diep.io mechanics. Players will control their spaceships in a limited battlefield (the space), visible into the Liquid Galaxy system (screens), with their virtual joystick (mobile app), fighting each other in a thirsty competition in order to achieve the highest score, being what most players like.
 </p>
+
+## Requirements
+
+Before installing the game, it's necessary to have some other tools installed as well.
+
+First, make sure _Node.js_ version **14+** is installed on the master machine by running:
+
+```bash
+$ node -v
+```
+
+This command should print something like `v16.17.0`. In case it doesn't, install _Node.js_ by following the 3 first steps at the link: [How To Install Latest Node.js on Ubuntu 16.04](https://tecadmin.net/install-latest-nodejs-npm-on-ubuntu/).
+
+With _Node.js_ installed, the next tool that must be installed is _pm2_. Run the command below to install it:
+
+```bash
+$ sudo npm i -g pm2
+```
+
+Finally, make sure to have Chromium Browser installed on all machines.
+
+> _**Chromium Browser** is usually installed into the Liquid Galaxy systems._
+
+## Installing the game
+
+There's a few steps to be able to run and play the game.
+
+First, open a new terminal and make sure you're into the **HOME** directory by running the `cd` command.
+
+Then, clone the **Galaxy Asteroids** repository by running:
+
+```bash
+$ git clone https://github.com/LiquidGalaxyLAB/galaxy-asteroids.git
+```
+
+Having the game in the local machine is not enough. Install it by running:
+
+```bash
+$ cd galaxy-asteroids
+$ bash install.sh
+```
+
+The installer requires you to type the amount of screens that your Liquid Galaxy system contains. I.e.: 5.
+
+That's it for the installation! The game is running on the _pm2_ using the **8129** port.
+
+> _The **8129** port can't be accessed until you reboot the machine._
+
+All of the installation logs is kept into the `./logs` directory. Make sure to check it out if you experience any problems throughout the installation.
+
+## Playing
+
+To be able to play the game, you must execute the `open.sh` script.
+
+To do so, navigate to the game directory by running:
+
+```bash
+$ cd ~/galaxy-asteroids
+```
+
+Then run the `open.sh` script:
+
+```bash
+$ bash ./scripts/open.sh
+```
+
+To close the game, execute the `close.sh` script:
+
+```bash
+$ bash ./scripts/close.sh
+```
 
 ## Project structure
 
@@ -304,7 +378,7 @@ export class MyEntity extends AbstractEntity implements IOnAwake {
     this.transform = this.getComponent(Transform)
     this.rigidbody = this.getComponent(Rigidbody)
     // The MyComponent component is not going to be used directly in
-    // the entity, we just need it behavior.
+    // the entity, we just need its behavior.
 
     this.myService = this.getService(MyService)
   }
