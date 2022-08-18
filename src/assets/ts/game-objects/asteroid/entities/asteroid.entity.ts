@@ -31,6 +31,8 @@ import { Transform } from '../../../shared/components/transform.component'
 import { ICollision2 } from '../../../shared/interfaces/collision2.interface'
 import { IOnTriggerEnter } from '../../../shared/interfaces/on-trigger-enter.interface'
 
+import { assetPath } from '../../../utils/assets'
+
 import { Subscription } from 'rxjs'
 
 /**
@@ -140,23 +142,23 @@ export class Asteroid
     if (this.getComponent(Render) || this.getComponent(RenderOverflow)) {
       this.image = new Image()
       if (!this.size) {
-        this.image.src = './assets/svg/asteroid-xs.svg'
+        this.image.src = `${assetPath}/svg/asteroid-xs.svg`
       } else if (this.size === 1) {
         const smallAsteroids = [1, 2]
 
-        this.image.src = `./assets/svg/asteroid-sm-${getRandom(
+        this.image.src = `${assetPath}/svg/asteroid-sm-${getRandom(
           smallAsteroids,
         )}.svg`
       } else if (this.size === 2) {
         const mediumAsteroids = [1, 2]
 
-        this.image.src = `./assets/svg/asteroid-md-${getRandom(
+        this.image.src = `${assetPath}/svg/asteroid-md-${getRandom(
           mediumAsteroids,
         )}.svg`
       } else {
         const largeAsteroids = [1, 2, 3]
 
-        this.image.src = `./assets/svg/asteroid-lg-${getRandom(
+        this.image.src = `${assetPath}/svg/asteroid-lg-${getRandom(
           largeAsteroids,
         )}.svg`
       }

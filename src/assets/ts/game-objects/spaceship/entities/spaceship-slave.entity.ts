@@ -14,6 +14,8 @@ import { Health } from '../../../shared/components/health.component'
 import { RenderOverflow } from '../../../shared/components/renderers/render-overflow.component'
 import { Transform } from '../../../shared/components/transform.component'
 
+import { assetPath } from '../../../utils/assets'
+
 import { Subscription } from 'rxjs'
 
 /**
@@ -75,7 +77,7 @@ export class SpaceshipSlave
 
   onStart() {
     this.image = new Image()
-    this.image.src = `./assets/svg/spaceship-${this.color}.svg`
+    this.image.src = `${assetPath}/svg/spaceship-${this.color}.svg`
 
     this.subscriptions.push(
       this.socketService
