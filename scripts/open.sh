@@ -13,4 +13,4 @@ for lg in $LG_FRAMES; do
   sleep 1
 done
 
-ssh -Xnf lg@lg1 " export DISPLAY=:0 ; chromium-browser http://localhost:$PORT/1 --start-fullscreen --autoplay-policy=no-user-gesture-required </dev/null >/dev/null 2>&1 &" || true
+ssh -Xnf lg@lg1 " export DISPLAY=:0 ; chromium-browser http://lg1:$PORT/1 --start-fullscreen --autoplay-policy=no-user-gesture-required </dev/null >/dev/null 2>&1 &" || true
