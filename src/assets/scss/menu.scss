@@ -1,4 +1,5 @@
-.menu-container {
+.menu-container,
+.controller-menu-container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -97,6 +98,80 @@
 
       margin-bottom: 20px;
     }
+  }
+}
+
+.controller-menu-container {
+  flex-direction: column;
+  gap: 1.25rem;
+
+  transition: opacity 0.2s;
+
+  & .player-customization {
+    margin-right: 0;
+
+    & .spaceship-customization {
+      padding: 0;
+
+      & .spaceship-skin-picker {
+        width: 1.5rem;
+        height: 1.5rem;
+
+        &:hover {
+          transform: scale(1);
+
+          & > svg {
+            color: #c4c4c4;
+          }
+        }
+
+        &:active {
+          transform: scale(1.3);
+
+          & > svg {
+            color: #48bdff;
+          }
+        }
+      }
+    }
+  }
+
+  &.hide {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.controller-play-menu-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  width: 100vw;
+  height: 100vh;
+
+  transition: opacity 0.2s;
+
+  & .play-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+
+    flex: 0.8;
+
+    width: 90%;
+
+    & > button {
+      font-size: 1.8rem;
+    }
+  }
+
+  &.hide {
+    opacity: 0;
+    pointer-events: none;
   }
 }
 

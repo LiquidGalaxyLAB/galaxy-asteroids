@@ -49,6 +49,10 @@
     margin-top: 2.5rem;
   }
 
+  &.opaque {
+    background-color: #0d0d0d;
+  }
+
   &.hide {
     opacity: 0;
     pointer-events: none;

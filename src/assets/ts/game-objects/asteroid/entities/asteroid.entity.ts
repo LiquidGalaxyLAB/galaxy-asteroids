@@ -177,6 +177,7 @@ export class Asteroid
   }
 
   onDestroy() {
+    this.gameService.asteroidsAmount -= 1
     this.socketService.emit('destroy', this.id)
     this.subscriptions.forEach((s) => s.unsubscribe())
   }
@@ -219,8 +220,6 @@ export class Asteroid
     if (this.size > 0) {
       this.generateAsteroidFragments(this.size <= 2 ? 1 : 2)
     }
-
-    this.gameService.asteroidsAmount -= 1
 
     this.destroy(this)
   }

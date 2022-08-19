@@ -132,9 +132,11 @@ function setupSocketScreen() {
 
     /**
      * Emits to all slaves screens that the game is over.
+     *
+     * @param {Object} player The player that has died.
      */
-    function gameOver() {
-      ioScreen.emit('game-over')
+    function gameOver(player) {
+      ioScreen.emit('game-over', player)
     }
     socket.on('game-over', gameOver)
 
@@ -179,6 +181,17 @@ function setupSocketScreen() {
     socket.on('change-health', changeHealth)
 
     /**
+     * Emits to all screens that a player has died. Is used by the mobile controller
+     * as well, so it may show the game over screen.
+     *
+     * @param {Object} playerInfo the player data.
+     */
+    function playerKilled(playerInfo) {
+      ioScreen.emit('player-killed', playerInfo)
+    }
+    socket.on('player-killed', playerKilled)
+
+    /**
      * Emits to all screens that the player has updated.
      *
      * @param {SocketData} data the player updated data.
@@ -187,6 +200,16 @@ function setupSocketScreen() {
       ioScreen.emit('update-player', data)
     }
     socket.on('update-player', updatePlayer)
+
+    /**
+     * Emits to all screens that the user joystick actions were updated.
+     *
+     * @param {string} actions The joystick actions.
+     */
+    function updateActions(actions) {
+      ioScreen.emit('update-actions', actions)
+    }
+    socket.on('update-actions', updateActions)
 
     /**
      * Called when a screen is disconnected.
