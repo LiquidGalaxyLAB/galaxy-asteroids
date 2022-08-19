@@ -1,0 +1,57 @@
+<div class="menu-container overlay">
+  <section class="play-buttons">
+    <span class="play-game-selector">
+      <button
+        id="play-singleplayer"
+        aria-label="SINGLEPLAYER"
+        class="play-singleplayer"
+      >
+        SINGLEPLAYER
+      </button>
+      <img
+        src="./assets/svg/spaceship-sp.svg"
+        alt="play-singleplayer-spaceship"
+      />
+    </span>
+
+    <!-- <span class="play-game-selector">
+      <button
+        id="play-local-multiplayer"
+        aria-label="LOCAL MULTIPLAYER"
+        class="play-local-multiplayer"
+      >
+        LOCAL MULTIPLAYER
+      </button>
+      <img
+        src="./assets/svg/spaceship-lmp.svg"
+        alt="play-local-multiplayer-spaceship"
+      />
+    </span> -->
+  </section>
+
+  <section class="player-customization">
+    <div class="spaceship-customization">
+      <div class="spaceship-skin-container">
+        <img
+          class="spaceship-skin"
+          src="./assets/svg/spaceship-grey.svg"
+          alt="Spaceship Skin"
+        />
+      </div>
+    </div>
+
+    <div class="spaceship-color-picker"></div>
+
+    <div class="nickname-input-container">
+      <input
+        id="nickname-input"
+        name="nickname"
+        type="text"
+        class="nickname-input"
+        maxlength="20"
+        required
+      />
+      <label for="nickname" class="nickname-label">Nickname</label>
+    </div>
+  </section>
+</div>

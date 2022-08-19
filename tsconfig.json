@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "es2016",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "noImplicitAny": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@asteroids": ["libs/asteroids"],
+      "@asteroids/*": ["libs/asteroids/*"]
+    },
+    "lib": ["es6", "dom"]
+  },
+  "include": ["src/**/*", "libs/**/*"],
+  "exclude": ["node_modules"]
+}

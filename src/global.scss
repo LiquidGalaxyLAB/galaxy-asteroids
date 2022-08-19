@@ -1,0 +1,31 @@
+@import './assets/scss/buttons.scss';
+@import './assets/scss/canvas.scss';
+@import './assets/scss/game-over.scss';
+@import './assets/scss/inputs.scss';
+@import './assets/scss/joystick.scss';
+@import './assets/scss/menu.scss';
+@import './assets/scss/score.scss';
+@import './assets/scss/screen.scss';
+@import './assets/scss/variables.scss';
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+
+  overflow: hidden;
+}
+
+input,
+textarea,
+button,
+select,
+a {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+@font-face {
+  font-family: 'Neptunus';
+  src: url('./assets/fonts/Neptunus/Neptunus.ttf');
+  font-weight: normal;
+}
