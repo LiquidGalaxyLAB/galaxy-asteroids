@@ -25,6 +25,9 @@ import { GameService } from '../../../shared/services/game.service'
 import { LGService } from '../../../shared/services/lg.service'
 import { UserService } from '../../../shared/services/user.service'
 
+import { AudioSource } from '../../../shared/components/audio-source.component'
+import { Transform } from '../../../shared/components/transform.component'
+
 import { Subscription } from 'rxjs'
 
 /**
@@ -32,11 +35,25 @@ import { Subscription } from 'rxjs'
  */
 @Entity({
   services: [GameService, LGService, SocketService, UserService],
+  components: [
+    {
+      class: AudioSource,
+      use: {
+        loop: true,
+      },
+    },
+    Transform,
+  ],
 })
 export class ManagerSingleplayer
   extends AbstractEntity
   implements IOnAwake, IOnStart, IOnDestroy
 {
+  /**
+   * Property that defines the audio source component.
+   */
+  private audioSource: AudioSource
+
   /**
    * Property that defines the game service.
    */
@@ -64,6 +81,8 @@ export class ManagerSingleplayer
   private subscriptions: Subscription[] = []
 
   onAwake() {
+    this.audioSource = this.getComponent(AudioSource)
+
     this.gameService = this.getService(GameService)
     this.lgService = this.getService(LGService)
     this.socketService = this.getService(SocketService)
@@ -115,9 +134,9 @@ export class ManagerSingleplayer
       }),
     )
 
-    this.gameService.maxAsteroidsAmount = 10
+    this.audioSource.play('./assets/audios/space-ambient.mp3')
 
-    // const color = window.localStorage.getItem(StorageEnum.COLOR)
+    this.gameService.maxAsteroidsAmount = 10
 
     const color = {
       hex: this.userService.color,
@@ -277,7 +296,7 @@ export class ManagerSingleplayer
                     },
                   },
                   {
-                    id: '__asteroids_health__',
+                    id: '__asteroid_health__',
                     use: {
                       color: data.color,
                       maxHealth: data.maxHealth,

@@ -19,6 +19,9 @@ import { SocketService } from '../../../shared/services/socket.service'
 import { LGService } from '../../../shared/services/lg.service'
 import { UserService } from '../../../shared/services/user.service'
 
+import { AudioSource } from '../../../shared/components/audio-source.component'
+import { Transform } from '../../../shared/components/transform.component'
+
 import { mobile } from '../../../utils/platform'
 
 import { Joystick } from '../../../scenes/joystick.scene'
@@ -28,11 +31,27 @@ import { firstValueFrom, Subscription } from 'rxjs'
 
 @Entity({
   services: [LGService, SocketService, UserService],
+  components: [
+    {
+      class: AudioSource,
+      use: {
+        spatial: true,
+        loop: true,
+        volume: 0.7,
+      },
+    },
+    Transform,
+  ],
 })
 export class Menu
   extends AbstractEntity
   implements IOnAwake, IOnStart, IOnDestroy
 {
+  /**
+   * Property that defines the audio source component.
+   */
+  private audioSource: AudioSource
+
   /**
    * Property that defines the Liquid Galaxy service.
    */
@@ -55,6 +74,8 @@ export class Menu
   private subscriptions: Subscription[] = []
 
   onAwake() {
+    this.audioSource = this.getComponent(AudioSource)
+
     this.lgService = this.getService(LGService)
     this.socketService = this.getService(SocketService)
     this.userService = this.getService(UserService)
@@ -95,6 +116,7 @@ export class Menu
         })
 
         if (this.lgService.master) {
+          this.audioSource.play('./assets/audios/menu-music.mp3')
           this.insertHtml()
         } else {
           this.insertSlaveHtml()
@@ -180,6 +202,8 @@ export class Menu
       }
 
       colorButton.addEventListener('click', () => {
+        this.audioSource.playOneShot('./assets/audios/menu-mouse-click.mp3')
+
         if (colorButton.classList.contains('active')) {
           return
         }

@@ -193,7 +193,9 @@ export class Input
       this.spaceship.shoot()
     }
 
-    if (this.gameKeys['up'] || this.actions?.isBoosting) {
+    this.spaceship.boosting = this.gameKeys['up'] || this.actions?.isBoosting
+
+    if (this.spaceship.boosting) {
       this.rigidbody.resultant = Vector2.sum(
         this.rigidbody.resultant,
         Vector2.multiply(this.spaceship.direction, this.force),

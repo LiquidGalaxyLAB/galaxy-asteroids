@@ -20,6 +20,7 @@ import { Bullet } from '../../bullet/entities/bullet.entity'
 
 import { GameService } from '../../../shared/services/game.service'
 
+import { AudioSource } from '../../../shared/components/audio-source.component'
 import { CircleCollider2 } from '../../../shared/components/colliders/circle-collider2.component'
 import { Drawer } from '../../../shared/components/drawer.component'
 import { Health } from '../../../shared/components/health.component'
@@ -92,6 +93,20 @@ import { Subscription } from 'rxjs'
       id: '__spaceship_health__',
       class: Health,
     },
+    {
+      class: AudioSource,
+      use: {
+        spatial: true,
+        loop: true,
+      },
+    },
+    {
+      class: AudioSource,
+      use: {
+        spatial: true,
+        loop: true,
+      },
+    },
   ],
 })
 export class Spaceship
@@ -119,6 +134,11 @@ export class Spaceship
    * Property that contains the spaceship health.
    */
   private health: Health
+
+  /**
+   * Property that contains the spaceship audio source.
+   */
+  private audioSources: AudioSource[]
 
   /**
    * Property that defines the game service.
@@ -169,6 +189,11 @@ export class Spaceship
   shooting = false
 
   /**
+   * Property that represents whether the spaceship is boosting.
+   */
+  boosting = false
+
+  /**
    * Property that links the spaceship to its user by the user id.
    */
   userId = ''
@@ -193,6 +218,7 @@ export class Spaceship
     this.gameService = this.getService(GameService)
     this.socketService = this.getService(SocketService)
 
+    this.audioSources = this.getComponents(AudioSource)
     this.health = this.getComponent(Health)
     this.rigidbody = this.getComponent(Rigidbody)
     this.transform = this.getComponent(Transform)
@@ -201,6 +227,8 @@ export class Spaceship
   onStart() {
     this.image = new Image()
     this.image.src = `${assetPath}/svg/spaceship-${this.color}.svg`
+
+    this.audioSources[0].play('./assets/audios/spaceship-thruster-v2.mp3', 0.5)
 
     this.subscriptions.push(
       this.health.health$.subscribe((value) => {
@@ -215,6 +243,12 @@ export class Spaceship
   }
 
   onLateLoop() {
+    if (!this.audioSources[1].playing && this.boosting) {
+      this.audioSources[1].play('./assets/audios/spaceship-thruster.mp3', 1)
+    } else if (this.audioSources[1].playing && !this.boosting) {
+      this.audioSources[1].stop()
+    }
+
     this.socketService.emit('update-slaves', {
       id: this.id,
       data: {
@@ -244,6 +278,12 @@ export class Spaceship
     }
 
     if (collision.entity2.tag?.includes(Asteroid.name)) {
+      this.audioSources[0].playOneShot(
+        './assets/audios/spaceship-collision.mp3',
+        this.transform.position,
+        0.6,
+      )
+
       const asteroid = collision.entity2 as unknown as Asteroid
       this.health.hurt((asteroid.size + 1) * 8)
     }
@@ -293,6 +333,11 @@ export class Spaceship
     }
 
     this.lastShot = new Date()
+
+    this.audioSources[0].playOneShot(
+      './assets/audios/blaster-shot.mp3',
+      this.transform.position,
+    )
 
     const groupId = v4()
 
