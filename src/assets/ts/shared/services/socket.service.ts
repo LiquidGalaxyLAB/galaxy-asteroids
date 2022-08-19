@@ -12,7 +12,9 @@ type SocketEmitEvents =
   | 'disconnect'
   | 'game-over'
   | 'instantiate'
+  | 'player-killed'
   | 'screen-amount'
+  | 'update-actions'
   | 'update-player'
   | 'update-slaves'
 
@@ -22,6 +24,8 @@ type SocketOnEvents =
   | 'destroy'
   | 'game-over'
   | 'instantiate'
+  | 'player-killed'
+  | 'update-actions'
   | 'update-player'
   | 'update-screen'
 
