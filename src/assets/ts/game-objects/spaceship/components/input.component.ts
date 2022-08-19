@@ -7,13 +7,16 @@ import {
   Vector2,
 } from '@asteroids'
 
+import { SocketService } from '../../../shared/services/socket.service'
+
 import { Spaceship } from '../entities/spaceship.entity'
 
 import { Rigidbody } from '../../../shared/components/rigidbody.component'
 
+import { IJoystickActions } from '../../../shared/interfaces/joystick.interface'
 import { IGameKeys } from '../interfaces/input.interface'
 
-import { fromEvent } from 'rxjs'
+import { fromEvent, Subscription } from 'rxjs'
 
 /**
  * Class that represents the component that allows  the user interaction
@@ -21,11 +24,23 @@ import { fromEvent } from 'rxjs'
  */
 @Component({
   required: [Rigidbody],
+  services: [SocketService],
 })
 export class Input
   extends AbstractComponent
   implements IOnAwake, IOnStart, IOnLoop
 {
+  /**
+   * Property that defines the socket service.
+   */
+  private socketService: SocketService
+
+  /**
+   * Property that defines an array of subscriptions that will be unsubscribed when
+   * the entity is destroyed.
+   */
+  private subscriptions: Subscription[] = []
+
   /**
    * Property that contains the pressed keys and whether they are pressed
    * or not.
@@ -42,6 +57,11 @@ export class Input
    * @default {}
    */
   private gameKeys: IGameKeys = {}
+
+  /**
+   * Property that keeps the joystick controller actions.
+   */
+  private actions: IJoystickActions
 
   /**
    * Property that represents the controlled entity's rigidbody.
@@ -66,10 +86,35 @@ export class Input
   onAwake() {
     this.spaceship = this.getEntityAs<Spaceship>()
     this.rigidbody = this.getComponent(Rigidbody)
+
+    this.socketService = this.getService(SocketService)
   }
 
   onStart() {
     this.listenKeys()
+
+    this.subscriptions.push(
+      this.socketService
+        .on<{ actions: IJoystickActions }>('update-actions')
+        .subscribe((data) => {
+          this.actions = data.actions
+
+          switch (data.actions.rotating) {
+            case 'right':
+              this.setGameKeyPressed('ArrowRight', true)
+              this.setGameKeyPressed('ArrowLeft', false)
+              break
+            case 'left':
+              this.setGameKeyPressed('ArrowRight', false)
+              this.setGameKeyPressed('ArrowLeft', true)
+              break
+            default:
+              this.setGameKeyPressed('ArrowRight', false)
+              this.setGameKeyPressed('ArrowLeft', false)
+              break
+          }
+        }),
+    )
   }
 
   /**
@@ -131,9 +176,16 @@ export class Input
       this.rigidbody.angularResultant = 0
     }
 
-    if (this.gameKeys['shoot'] && !this.spaceship.shooting) {
+    if (
+      this.actions?.isShooting ||
+      (this.gameKeys['shoot'] && !this.spaceship.shooting)
+    ) {
       this.spaceship.shooting = true
-    } else if (!this.gameKeys['shoot'] && this.spaceship.shooting) {
+    } else if (
+      !this.actions?.isShooting &&
+      !this.gameKeys['shoot'] &&
+      this.spaceship.shooting
+    ) {
       this.spaceship.shooting = false
     }
 
@@ -141,7 +193,7 @@ export class Input
       this.spaceship.shoot()
     }
 
-    if (this.gameKeys['up']) {
+    if (this.gameKeys['up'] || this.actions?.isBoosting) {
       this.rigidbody.resultant = Vector2.sum(
         this.rigidbody.resultant,
         Vector2.multiply(this.spaceship.direction, this.force),
