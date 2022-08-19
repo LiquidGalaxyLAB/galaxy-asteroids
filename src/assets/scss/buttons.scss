@@ -8,6 +8,21 @@ button {
 
   font-family: 'Neptunus';
 
+  &.play,
+  &.back {
+    color: white;
+    font-size: 2.125rem;
+    letter-spacing: 0.035rem;
+  }
+
+  &.play {
+    margin-top: 6rem;
+  }
+
+  &.back {
+    font-size: 1.5rem;
+  }
+
   &.play-singleplayer,
   &.play-local-multiplayer {
     font-size: 2.125rem;
