@@ -19,6 +19,9 @@ import { SocketService } from '../../../shared/services/socket.service'
 import { LGService } from '../../../shared/services/lg.service'
 import { UserService } from '../../../shared/services/user.service'
 
+import { mobile } from '../../../utils/platform'
+
+import { Joystick } from '../../../scenes/joystick.scene'
 import { Singleplayer } from '../../../scenes/single.scene'
 import { StorageEnum } from '../../../shared/enums/storage.enum'
 import { firstValueFrom, Subscription } from 'rxjs'
@@ -58,6 +61,11 @@ export class Menu
   }
 
   onStart() {
+    if (mobile) {
+      this.insertControllerHtml()
+      return
+    }
+
     this.subscriptions.push(
       this.socketService.on<string>('change-scene').subscribe((scene) => {
         switch (scene) {
@@ -307,5 +315,81 @@ export class Menu
     addClass(div, 'overlay')
 
     appendChildren(document.body, div)
+  }
+
+  /**
+   * Inserts the controller menu HTML into the body.
+   */
+  private async insertControllerHtml() {
+    destroyMultipleElements('ast-controller-menu')
+
+    const html = await getHtml('controller-menu', 'ast-controller-menu')
+    html.style.position = 'absolute'
+    html.style.top = '0'
+    html.style.left = '0'
+
+    appendChildren(document.body, html)
+
+    this.loadMenu()
+
+    const playButton = getElement<HTMLButtonElement>('.play')
+    const backButton = getElement<HTMLButtonElement>('.back')
+    const spButton = getElement<HTMLButtonElement>('.play-singleplayer')
+
+    const colorButtons = getMultipleElements(
+      '.color-button',
+    ) as HTMLButtonElement[]
+
+    const inputName = getElement<HTMLInputElement>('#nickname-input')
+
+    if (!playButton || !backButton || !spButton || !inputName) {
+      return
+    }
+
+    playButton.addEventListener('click', () => {
+      addClass('.controller-menu-container', 'hide')
+      removeClass('.controller-play-menu-container', 'hide')
+    })
+
+    backButton.addEventListener('click', () => {
+      addClass('.controller-play-menu-container', 'hide')
+      removeClass('.controller-menu-container', 'hide')
+    })
+
+    spButton.addEventListener('click', () => {
+      setTimeout(() => {
+        this.lgService.changeScene('single')
+
+        destroyMultipleElements('ast-controller-menu')
+        this.scene.unload(this.scene)
+        this.scene.load(Joystick)
+      }, 400)
+    })
+
+    colorButtons.forEach((button) => {
+      if (!button.classList.contains('active')) {
+        return
+      }
+
+      this.userService.color = button.style.backgroundColor
+      this.userService.image = button.classList.item(1)
+    })
+
+    this.userService.nickname = inputName.value
+
+    this.socketService.emit('update-player', {
+      nickname: this.userService.nickname,
+      color: this.userService.image,
+    })
+
+    inputName.addEventListener('input', (event: InputEvent) => {
+      const value = (event.target as HTMLInputElement).value
+
+      this.userService.nickname = value
+      this.socketService.emit('update-player', {
+        nickname: value,
+        color: this.userService.image,
+      })
+    })
   }
 }
