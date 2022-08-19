@@ -77,11 +77,6 @@ export class ManagerSingleplayer
           return
         }
 
-        // this.lgService.screenAmount = amount
-        // await firstValueFrom(
-        //   this.lgService.connectScreen(this.lgService.getPathScreenNumber()),
-        // )
-
         this.lgService.setCanvasSize()
 
         this.getContexts().forEach((context) => {
@@ -90,9 +85,13 @@ export class ManagerSingleplayer
           context.canvas.style.transform = `translateX(-${this.lgService.displacement}px)`
         })
 
-        setTimeout(() => {
-          this.lgService.screen?.number === 1 ? this.master() : this.slave()
-        }, 100)
+        if (this.lgService.master) {
+          setTimeout(() => {
+            this.master()
+          }, 100)
+        } else {
+          this.slave()
+        }
       }),
     )
   }
@@ -112,7 +111,7 @@ export class ManagerSingleplayer
         }
 
         this.instantiate({ entity: GameOver })
-        this.socketService.emit('game-over')
+        this.socketService.emit('game-over', { score: this.userService.score })
       }),
     )
 
