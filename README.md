@@ -6,6 +6,7 @@
 - [Requirements](#requirements)
 - [Installing the game](#installing-the-game)
 - [Playing](#playing)
+- [LG Retro Gaming](#lg-retro-gaming)
 - [Project structure](#project-structure)
   - [Libs](#libs)
   - [index.js](#indexjs)
@@ -99,6 +100,12 @@ To close the game, execute the `close.sh` script:
 ```bash
 $ bash ./scripts/close.sh
 ```
+
+With the game running, open the `http://<master-ip>:<game-port>/` with a mobile device to access the joystick controller.
+
+## LG Retro Gaming
+
+To have a better experience, use the [LG Retro Gaming](https://github.com/LiquidGalaxyLAB/lg-retro-gaming) application to play the game. You must install it by following its documentation and download the app from the [Google Play Store](https://play.google.com/store/apps/details?id=com.leoruas.lg_retro_gaming) to be able to access the joystick controller.
 
 ## Project structure
 
