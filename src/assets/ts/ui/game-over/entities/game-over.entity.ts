@@ -1,5 +1,6 @@
 import {
   AbstractEntity,
+  addClass,
   appendChildren,
   createElement,
   destroyMultipleElements,
@@ -113,6 +114,10 @@ export class GameOver
 
     appendChildren(document.body, html)
     removeClass('.game-over-container', 'hide')
+
+    if (mobile) {
+      addClass('.game-over-container', 'opaque')
+    }
 
     const score = getElement('ast-game-over .score .amount')
     if (score) {
