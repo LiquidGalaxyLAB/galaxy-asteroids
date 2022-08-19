@@ -19,6 +19,9 @@ import { GameService } from '../../../shared/services/game.service'
 import { LGService } from '../../../shared/services/lg.service'
 import { UserService } from '../../../shared/services/user.service'
 
+import { mobile } from '../../../utils/platform'
+
+import { Joystick } from '../../../scenes/joystick.scene'
 import { Menu } from '../../../scenes/menu.scene'
 import { Singleplayer } from '../../../scenes/single.scene'
 import { Subscription } from 'rxjs'
@@ -64,7 +67,7 @@ export class GameOver
   }
 
   onStart() {
-    if (this.lgService.master) {
+    if (this.lgService.master || mobile) {
       this.insertHtml()
     } else {
       this.insertSlaveHtml()
@@ -75,7 +78,7 @@ export class GameOver
         switch (scene) {
           case 'single':
             this.scene.unload(this.scene)
-            this.scene.load(Singleplayer)
+            this.scene.load(mobile ? Joystick : Singleplayer)
             break
           case 'menu':
             this.scene.unload(this.scene)
@@ -117,7 +120,7 @@ export class GameOver
     }
 
     const respawnButton = getElement<HTMLButtonElement>('.respawn')
-    const backButton = getElement<HTMLButtonElement>('.back')
+    const backButton = getElement<HTMLButtonElement>('.back-menu')
 
     if (!respawnButton || !backButton) {
       return
