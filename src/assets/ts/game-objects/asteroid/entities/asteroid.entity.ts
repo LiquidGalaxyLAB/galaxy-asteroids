@@ -20,6 +20,7 @@ import { Bullet } from '../../bullet/entities/bullet.entity'
 import { GameService } from '../../../shared/services/game.service'
 import { UserService } from '../../../shared/services/user.service'
 
+import { AudioSource } from '../../../shared/components/audio-source.component'
 import { CircleCollider2 } from '../../../shared/components/colliders/circle-collider2.component'
 import { Drawer } from '../../../shared/components/drawer.component'
 import { Health } from '../../../shared/components/health.component'
@@ -44,6 +45,7 @@ import { Subscription } from 'rxjs'
     Render,
     Drawer,
     CircleCollider2,
+    AudioSource,
     {
       id: '__asteroid_transform__',
       class: Transform,
@@ -63,6 +65,11 @@ export class Asteroid
   extends AbstractEntity
   implements IOnAwake, IOnStart, IOnDestroy, IDraw, IOnLoop, IOnTriggerEnter
 {
+  /**
+   * Property that defines the audio source component.
+   */
+  private audioSource: AudioSource
+
   /**
    * Property that defines the game service.
    */
@@ -130,6 +137,7 @@ export class Asteroid
   onAwake() {
     this.transform = this.getComponent(Transform)
     this.health = this.getComponent(Health)
+    this.audioSource = this.getComponent(AudioSource)
 
     this.gameService = this.getService(GameService)
     this.socketService = this.getService(SocketService)
@@ -202,6 +210,12 @@ export class Asteroid
 
       if (!this.hitGroup || this.hitGroup !== bullet.groupId) {
         this.hitGroup = bullet.groupId
+
+        this.audioSource.playOneShot(
+          `./assets/audios/${bullet.hitSound}`,
+          this.transform.position,
+          0.3,
+        )
       }
 
       this.health.hurt(20)

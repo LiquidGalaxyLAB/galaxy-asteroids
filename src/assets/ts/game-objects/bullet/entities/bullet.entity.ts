@@ -52,6 +52,11 @@ export class Bullet
   private socketService: SocketService
 
   /**
+   * Property that defines the hitting audio asset.
+   */
+  readonly hitSound = 'laser-hit.mp3'
+
+  /**
    * @inheritDoc
    */
   tag = Bullet.name
