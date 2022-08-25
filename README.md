@@ -68,10 +68,10 @@ Having the game in the local machine is not enough. Install it by running:
 
 ```bash
 $ cd galaxy-asteroids
-$ bash install.sh
+$ bash install.sh {password}
 ```
 
-The installer requires you to type the amount of screens that your Liquid Galaxy system contains. I.e.: 5.
+> _The {password} is the password from you system_.
 
 That's it for the installation! The game is running on the _pm2_ using the **8129** port.
 
@@ -105,7 +105,7 @@ With the game running, open the `http://<master-ip>:<game-port>/` with a mobile 
 
 ## LG Retro Gaming
 
-To have a better experience, use the [LG Retro Gaming](https://github.com/LiquidGalaxyLAB/lg-retro-gaming) application to play the game. You must install it by following its documentation and download the app from the [Google Play Store](https://play.google.com/store/apps/details?id=com.leoruas.lg_retro_gaming) to be able to access the joystick controller.
+To have a better experience, use the [LG Retro Gaming](https://github.com/LiquidGalaxyLAB/lg-retro-gaming) application to install and play the game. You must install it by following its documentation and download the app from the [Google Play Store](https://play.google.com/store/apps/details?id=com.leoruas.lg_retro_gaming) to be able to access the joystick controller.
 
 ## Project structure
 
