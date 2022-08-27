@@ -37,8 +37,7 @@ echo $PW | sudo -S npm install -y
 # Set game environment
 time=$(date +%H:%M:%S)
 echo "[$time] Setting game environment..."
-echo $PW | sudo -S echo "PORT=$PORT" > $GAME_FOLDER/.env
-echo $PW | sudo -S echo "SCREEN_AMOUNT=$LG_SCREEN_AMOUNT" >> $GAME_FOLDER/.env
+echo $PW | sudo -S echo -e "PORT=$PORT\nSCREEN_AMOUNT=$LG_SCREEN_AMOUNT" | sudo tee $GAME_FOLDER/.env
 
 # Build the game
 time=$(date +%H:%M:%S)
