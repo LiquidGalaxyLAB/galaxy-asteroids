@@ -5,10 +5,7 @@ GAME_FOLDER="/home/lg/galaxy-asteroids"
 
 PW="$1"
 
-LG_SCREEN_AMOUNT=(grep -oP '(?<=DHCP_LG_FRAMES_MAX=).*' personavars.txt)
-
-date=$(date +%Y-%m-%dT%H-%M-%S.000Z)
-filename="$date.txt"
+LG_SCREEN_AMOUNT=$(grep -oP '(?<=DHCP_LG_FRAMES_MAX=).*' /home/lg/personavars.txt)
 
 time=$(date +%H:%M:%S)
 echo "[$time] Installing Galaxy Asteroids..."
